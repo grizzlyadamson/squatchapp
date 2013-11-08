@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Squatchapp::Application.config.secret_key_base = 'b17b656b939192349ce235d29d3adf67ab29e9c7d5cca9d28a82da469e900b55d799c4015213e4533453f7abe742c1097b18716d0b6e65383ef05b0cfade57cd'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Squatchapp::Application.config.secret_key_base = secure_token
